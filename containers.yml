@@ -1,0 +1,24 @@
+---
+
+- hosts: localhost
+  tasks:
+    - name: create hadoop docker cluster
+      docker_container:
+        image: docker.io/centos:6
+        name: node-{{ item }}
+        hostname: node-{{ item }}
+        network_mode: bridge
+        networks:
+          - name: hadnet
+        command: /bin/sleep infinity
+        privileged: true
+      with_sequence: count=6
+
+#   - name: purge networks
+#      docker_container:
+#        name: node-{{ item }}
+#        networks:
+#          - name: hadnet
+#        purge_networks: yes
+#        privileged: true
+#      with_sequence: count=6

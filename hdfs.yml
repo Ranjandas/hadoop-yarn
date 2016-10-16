@@ -1,0 +1,102 @@
+---
+
+- hosts: namenode
+  tasks:
+    - name: install namenode 
+      yum:
+        name: hadoop-hdfs-namenode
+        state: present
+
+- hosts: secondarynamenode
+  tasks:
+    - name: install secondary namenode
+      yum:
+        name: hadoop-hdfs-secondarynamenode
+
+- hosts: datanode
+  tasks:
+    - name: install hadoop hdfs package
+      yum:
+        name: hadoop-hdfs-datanode
+        state: present
+
+- hosts: namenode, secondarynamenode, datanode
+  vars:
+    core_site:
+      fs.defaultFS: "hdfs://{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8020"
+      #fs.defaultFS: "hdfs://{{ hostvars['node-1']['ansible_fqdn'] }}:8020"
+      dfs.namenode.rpc-bind-host: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"
+    hdfs_site:
+      dfs.namenode.name.dir: "file:///var/lib/hadoop-hdfs/cache/hdfs/dfs/name"
+      dfs.replication: "2"
+
+  tasks:
+    - name: template core-site.xml
+      template:
+        src: core-site.xml.j2
+        dest: /etc/hadoop/conf/core-site.xml
+      when: core_site is defined
+      notify:
+        - restart namenode
+        - restart secondarynamenode
+        - restart datanode
+
+    - name: template hdfs-site.xml
+      template:
+        src: hdfs-site.xml.j2
+        dest: /etc/hadoop/conf/hdfs-site.xml
+      when: hdfs_site is defined
+      notify:
+        - restart namenode
+        - restart secondarynamenode
+        - restart datanode
+
+  handlers:
+    - name: restart namenode
+      service:
+        name: hadoop-hdfs-namenode
+        state: restarted
+      when: "'namenode' in group_names"
+
+    - name: restart secondarynamenode
+      service:
+        name: hadoop-hdfs-secondarynamenode
+        state: restarted
+      when: "'secondarynamenode' in group_names"
+
+    - name: restart datanode
+      service:
+        name: hadoop-hdfs-datanode
+        state: restarted
+      when: "'datanode' in group_names"
+
+- hosts: namenode
+  tasks:
+    - name: format hdfs
+      shell: "service hadoop-hdfs-namenode init"
+      args:
+        creates: /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current/VERSION
+
+    - name: start namenode service
+      service:
+        name: hadoop-hdfs-namenode
+        state: started
+
+- hosts: secondarynamenode
+  tasks:
+    - wait_for: 
+        host: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"
+        port: 8020
+        delay: 10
+
+    - name: start secondarynamenode
+      service:
+        name: hadoop-hdfs-secondarynamenode
+        state: started
+
+- hosts: datanode
+  tasks:
+    - name: start datanode
+      service:
+        name: hadoop-hdfs-datanode
+        state: started

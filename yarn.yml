@@ -1,0 +1,100 @@
+---
+
+- hosts: resourcemanager
+  tasks:
+    - name: install yarn resourcemanager
+      yum:
+        name: hadoop-yarn-resourcemanager
+        state: present
+
+- hosts: nodemanager
+  tasks:
+    - name: install yarn resourcemanager
+      yum:
+        name: hadoop-yarn-nodemanager
+        state: present
+
+- hosts: proxyserver
+  tasks:
+    - name: install yarn proxyserver
+      yum:
+        name: hadoop-yarn-proxyserver
+        state: present
+
+- hosts: resourcemanager, nodemanager, proxyserver
+  vars:
+    yarn_site:
+      yarn.nodemanager.aux-services: "mapreduce_shuffle"
+      yarn.resourcemanager.hostname: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"
+      yarn.resourcemanager.bind-host: "0.0.0.0"
+      yarn.resourcemanager.admin.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8033"
+      yarn.resourcemanager.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8032"
+      yarn.resourcemanager.scheduler.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8030"
+      yarn.resourcemanager.resource-tracker.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8031"
+      yarn.log.aggregation-enable: true      
+      yarn.application.classpath: "$HADOOP_CONF_DIR, $HADOOP_COMMON_HOME/*, $HADOOP_COMMON_HOME/lib/*, $HADOOP_HDFS_HOME/*, $HADOOP_HDFS_HOME/lib/*, $HADOOP_MAPRED_HOME/*, $HADOOP_MAPRED_HOME/lib/*, $HADOOP_YARN_HOME/*, $HADOOP_YARN_HOME/lib/*"
+      yarn.web-proxy.address: "{{ hostvars['node-2']['ansible_eth1']['ipv4']['address'] }}:43695"
+
+    mapred_site:
+      mapreduce.framework.name: yarn
+
+  tasks:
+    - name: template mapred-site.xml
+      template:
+        src: mapred-site.xml.j2
+        dest: /etc/hadoop/conf/mapred-site.xml
+      when: mapred_site is defined
+      notify:
+        - restart nodemanager
+        - restart proxyserver
+        - restart resourcemanager
+
+    - name: template yarn-site.xml
+      template:
+        src: yarn-site.xml.j2
+        dest: /etc/hadoop/conf/yarn-site.xml
+      when: yarn_site is defined
+      notify:
+        - restart resourcemanager
+        - restart proxyserver
+        - restart nodemanager
+
+  handlers:
+    - name: restart resourcemanager
+      service:
+        name: hadoop-yarn-resourcemanager
+        state: restarted
+      when: "'resourcemanager' in group_names"
+
+    - name: restart nodemanager
+      service:
+        name: hadoop-yarn-nodemanager
+        state: restarted
+      when: "'nodemanager' in group_names"
+
+    - name: restart proxyserver
+      service:
+        name: hadoop-yarn-proxyserver
+        state: restarted
+      when: "'proxyserver' in group_names"
+
+- hosts: resourcemanager
+  tasks:
+    - name: start yarn resourcemanager
+      service:
+        name: hadoop-yarn-resourcemanager
+        state: started
+
+- hosts: nodemanager
+  tasks:
+    - name: start yarn nodemanager
+      service:
+        name: hadoop-yarn-nodemanager
+        state: started
+
+- hosts: proxyserver
+  tasks:
+    - name: start yarn proxyserver
+      service:
+        name: hadoop-yarn-proxyserver
+        state: started
