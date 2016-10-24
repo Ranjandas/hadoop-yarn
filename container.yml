@@ -13,12 +13,3 @@
         command: /bin/sleep infinity
         privileged: true
       with_sequence: count=6
-
-#   - name: purge networks
-#      docker_container:
-#        name: node-{{ item }}
-#        networks:
-#          - name: hadnet
-#        purge_networks: yes
-#        privileged: true
-#      with_sequence: count=6

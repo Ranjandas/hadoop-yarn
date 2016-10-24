@@ -1,0 +1,13 @@
+---
+
+# Start Docker Containers
+- include: container.yml
+
+# Configure YUM repositories
+- include: base.yml
+
+# Install and configure HDFS
+- include: hdfs.yml
+
+# Install and configure YARN
+- include: yarn.yml
