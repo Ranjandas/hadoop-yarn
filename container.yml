@@ -2,7 +2,7 @@
 
 - hosts: localhost
   tasks:
-    - name: create hadoop docker cluster
+    - name: Launch Docker Containers
       docker_container:
         image: docker.io/centos:6
         name: node-{{ item }}

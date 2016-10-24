@@ -2,21 +2,24 @@
 
 - hosts: all
   tasks:
-    - yum_repository:
+    - name: Configure CDH5 YUM Repository 
+      yum_repository:
         name: "cloudera-cdh5"
         description: "Cloudera's Distribution for Hadoop, Version 5"
         baseurl: "http://192.168.1.154/cdh5/redhat/6/x86_64/cdh/5.3.8/"
         gpgkey: "http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera"
         gpgcheck: yes
 
-    - yum_repository:
+    - name: Configure Cloudera Manager YUM Repository
+      yum_repository:
         name: "cloudera-manager"
         description: "Cloudera Manager"
         baseurl: "http://192.168.1.154/cm5/redhat/6/x86_64/cm/5.3.8/"
         gpgkey: "http://192.168.1.154/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera"
         gpgcheck: yes
 
-    - yum_repository:
+    - name: Configure CentOS Base Repository
+      yum_repository:
         name: "base"
         description: "CentOS-$releasever - Base"
         baseurl: "http://mirror.optus.net/centos/$releasever/os/$basearch/"
@@ -24,7 +27,8 @@
         gpgcheck: yes
         file: "CentOS-Base"
 
-    - yum_repository:
+    - name: Configure CentOS Updates Repository
+      yum_repository:
         name: "updates"
         description: "CentOS-$releasever - Updates"
         baseurl: "http://mirror.optus.net/centos/$releasever/updates/$basearch/"
@@ -32,7 +36,8 @@
         gpgcheck: yes
         file: "CentOS-Base"
 
-    - yum_repository:
+    - name: Configure CentOS Extras Repository 
+      yum_repository:
         name: "extras"
         description: "CentOS-$releasever - Extras"
         baseurl: "http://mirror.optus.net/centos/$releasever/extras/$basearch/"
@@ -46,6 +51,7 @@
         - "192.168.1.154    archive.cloudera.com"
       #FIXME
 
-    - yum:
+    - name: Install Oracle J2 SDK 
+      yum:
         name: "oracle-j2sdk1.7"
         state: present

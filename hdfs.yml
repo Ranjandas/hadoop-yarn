@@ -2,20 +2,20 @@
 
 - hosts: namenode
   tasks:
-    - name: install namenode 
+    - name: Install Hadoop HDFS Namenode
       yum:
         name: hadoop-hdfs-namenode
         state: present
 
 - hosts: secondarynamenode
   tasks:
-    - name: install secondary namenode
+    - name: Install Hadoop HDFS SecondaryNamenode
       yum:
         name: hadoop-hdfs-secondarynamenode
 
 - hosts: datanode
   tasks:
-    - name: install hadoop hdfs package
+    - name: Install Hadoop HDFS Datanode
       yum:
         name: hadoop-hdfs-datanode
         state: present
@@ -31,40 +31,46 @@
       dfs.replication: "2"
 
   tasks:
-    - name: template core-site.xml
+    - name: Configure core-site.xml
       template:
         src: core-site.xml.j2
         dest: /etc/hadoop/conf/core-site.xml
       when: core_site is defined
       notify:
-        - restart namenode
-        - restart secondarynamenode
-        - restart datanode
+        - Restart Hadoop HDFS Namenode
+        - Restart Hadoop HDFS SecondaryNamenode
+        - Restart Hadoop HDFS Datanode
 
-    - name: template hdfs-site.xml
+    - name: Configure hdfs-site.xml
       template:
         src: hdfs-site.xml.j2
         dest: /etc/hadoop/conf/hdfs-site.xml
       when: hdfs_site is defined
       notify:
-        - restart namenode
-        - restart secondarynamenode
-        - restart datanode
+        - Restart Hadoop HDFS Namenode
+        - Restart Hadoop HDFS SecondaryNamenode
+        - Restart Hadoop HDFS Datanode
+
+    - name: Format Namenode (Bootstrap)
+      shell: "service hadoop-hdfs-namenode init"
+      args:
+        creates: /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current/VERSION
+      when: "inventory_hostname == groups['namenode'][0]"
 
   handlers:
-    - name: restart namenode
+    - name: Restart Hadoop HDFS Namenode
       service:
         name: hadoop-hdfs-namenode
         state: restarted
       when: "'namenode' in group_names"
 
-    - name: restart secondarynamenode
+    - name: Restart Hadoop HDFS SecondaryNamenode
       service:
         name: hadoop-hdfs-secondarynamenode
         state: restarted
       when: "'secondarynamenode' in group_names"
 
-    - name: restart datanode
+    - name: Restart Hadoop HDFS Datanode
       service:
         name: hadoop-hdfs-datanode
         state: restarted
@@ -72,31 +78,28 @@
 
 - hosts: namenode
   tasks:
-    - name: format hdfs
-      shell: "service hadoop-hdfs-namenode init"
-      args:
-        creates: /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current/VERSION
 
-    - name: start namenode service
+    - name: Start Hadoop HDFS Namenode
       service:
         name: hadoop-hdfs-namenode
         state: started
 
 - hosts: secondarynamenode
   tasks:
-    - wait_for: 
+    - name: Wait For Namenode Port 8020
+      wait_for: 
         host: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"
         port: 8020
         delay: 10
 
-    - name: start secondarynamenode
+    - name: Start Hadoop HDFS SecondaryNamenode
       service:
         name: hadoop-hdfs-secondarynamenode
         state: started
 
 - hosts: datanode
   tasks:
-    - name: start datanode
+    - name: Start Hadoop HDFS Datanode
       service:
         name: hadoop-hdfs-datanode
         state: started

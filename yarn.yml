@@ -2,21 +2,21 @@
 
 - hosts: resourcemanager
   tasks:
-    - name: install yarn resourcemanager
+    - name: Install Hadoop Yarn ResourceManager
       yum:
         name: hadoop-yarn-resourcemanager
         state: present
 
 - hosts: nodemanager
   tasks:
-    - name: install yarn resourcemanager
+    - name: Install Hadoop Yarn NodeManager
       yum:
         name: hadoop-yarn-nodemanager
         state: present
 
 - hosts: proxyserver
   tasks:
-    - name: install yarn proxyserver
+    - name: Install Hadoop Yarn ProxyServer
       yum:
         name: hadoop-yarn-proxyserver
         state: present
@@ -39,40 +39,40 @@
       mapreduce.framework.name: yarn
 
   tasks:
-    - name: template mapred-site.xml
+    - name: Configure mapred-site.xml
       template:
         src: mapred-site.xml.j2
         dest: /etc/hadoop/conf/mapred-site.xml
       when: mapred_site is defined
       notify:
-        - restart nodemanager
-        - restart proxyserver
-        - restart resourcemanager
+        - Restart Hadoop Yarn NodeManager
+        - Restart Hadoop Yarn ResourceManager
+        - Restart Hadoop Yarn ProxyServer
 
-    - name: template yarn-site.xml
+    - name: Configure yarn-site.xml
       template:
         src: yarn-site.xml.j2
         dest: /etc/hadoop/conf/yarn-site.xml
       when: yarn_site is defined
       notify:
-        - restart resourcemanager
-        - restart proxyserver
-        - restart nodemanager
+        - Restart Hadoop Yarn NodeManager
+        - Restart Hadoop Yarn ResourceManager
+        - Restart Hadoop Yarn ProxyServer
 
   handlers:
-    - name: restart resourcemanager
+    - name: Restart Hadoop Yarn ResourceManager
       service:
         name: hadoop-yarn-resourcemanager
         state: restarted
       when: "'resourcemanager' in group_names"
 
-    - name: restart nodemanager
+    - name: Restart Hadoop Yarn NodeManager
       service:
         name: hadoop-yarn-nodemanager
         state: restarted
       when: "'nodemanager' in group_names"
 
-    - name: restart proxyserver
+    - name: Restart Hadoop Yarn NodeManager
       service:
         name: hadoop-yarn-proxyserver
         state: restarted
@@ -80,21 +80,21 @@
 
 - hosts: resourcemanager
   tasks:
-    - name: start yarn resourcemanager
+    - name: Start Hadoop Yarn ResourceManager
       service:
         name: hadoop-yarn-resourcemanager
         state: started
 
 - hosts: nodemanager
   tasks:
-    - name: start yarn nodemanager
+    - name: Start Hadoop Yarn NodeManager
       service:
         name: hadoop-yarn-nodemanager
         state: started
 
 - hosts: proxyserver
   tasks:
-    - name: start yarn proxyserver
+    - name: Start Hadoop Yarn ProxyServer
       service:
         name: hadoop-yarn-proxyserver
         state: started
