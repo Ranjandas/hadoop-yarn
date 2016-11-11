@@ -2,9 +2,13 @@
 
 - hosts: localhost
   tasks:
+    - name: Create Container Network
+      docker_network:
+        name: hadnet
+
     - name: Launch Docker Containers
       docker_container:
-        image: docker.io/centos:6
+        image: centos:6
         name: node-{{ item }}
         hostname: node-{{ item }}
         network_mode: bridge

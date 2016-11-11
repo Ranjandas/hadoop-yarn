@@ -12,6 +12,7 @@
     - name: Install Hadoop HDFS SecondaryNamenode
       yum:
         name: hadoop-hdfs-secondarynamenode
+        state: present
 
 - hosts: datanode
   tasks:

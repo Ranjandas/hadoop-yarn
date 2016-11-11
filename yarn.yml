@@ -31,9 +31,10 @@
       yarn.resourcemanager.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8032"
       yarn.resourcemanager.scheduler.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8030"
       yarn.resourcemanager.resource-tracker.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8031"
-      yarn.log.aggregation-enable: true      
       yarn.application.classpath: "$HADOOP_CONF_DIR, $HADOOP_COMMON_HOME/*, $HADOOP_COMMON_HOME/lib/*, $HADOOP_HDFS_HOME/*, $HADOOP_HDFS_HOME/lib/*, $HADOOP_MAPRED_HOME/*, $HADOOP_MAPRED_HOME/lib/*, $HADOOP_YARN_HOME/*, $HADOOP_YARN_HOME/lib/*"
       yarn.web-proxy.address: "{{ hostvars['node-2']['ansible_eth1']['ipv4']['address'] }}:43695"
+      yarn.log-aggregation-enable: true
+      yarn.log-aggregation.retain-seconds: "259200"
 
     mapred_site:
       mapreduce.framework.name: yarn
@@ -72,7 +73,7 @@
         state: restarted
       when: "'nodemanager' in group_names"
 
-    - name: Restart Hadoop Yarn NodeManager
+    - name: Restart Hadoop Yarn ProxyServer
       service:
         name: hadoop-yarn-proxyserver
         state: restarted
