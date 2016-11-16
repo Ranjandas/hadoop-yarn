@@ -1,7 +1,10 @@
 ---
 
 # Start Docker Containers
-- include: container.yml
+- include: containers.yml
+
+# Install and configure Proxy
+- include: proxy.yml
 
 # Configure YUM repositories
 - include: base.yml
