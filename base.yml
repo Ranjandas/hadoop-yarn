@@ -1,28 +1,31 @@
 ---
 
 - hosts: all
+  vars:
+    cloudera_mirror_host: "artifactory.dev.cba/com.cloudera.archive"
+    centos_mirror_host: "artifactory.dev.cba/mirror.aarnet.edu.au/pub/"
   tasks:
     - name: Configure CDH5 YUM Repository 
       yum_repository:
         name: "cloudera-cdh5"
         description: "Cloudera's Distribution for Hadoop, Version 5"
-        baseurl: "http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/5.3.8/"
-        gpgkey: "http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera"
+        baseurl: "http://{{ cloudera_mirror_host }}/cdh5/redhat/6/x86_64/cdh/5.3.8/"
+        gpgkey: "http://{{ cloudera_mirror_host }}/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera"
         gpgcheck: yes
 
     - name: Configure Cloudera Manager YUM Repository
       yum_repository:
         name: "cloudera-manager"
         description: "Cloudera Manager"
-        baseurl: "http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5.3.8/"
-        gpgkey: "http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera"
+        baseurl: "http://{{ cloudera_mirror_host }}/cm5/redhat/6/x86_64/cm/5.3.8/"
+        gpgkey: "http://{{ cloudera_mirror_host }}/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera"
         gpgcheck: yes
 
     - name: Configure CentOS Base Repository
       yum_repository:
         name: "base"
         description: "CentOS-$releasever - Base"
-        baseurl: "http://mirror.optus.net/centos/$releasever/os/$basearch/"
+        baseurl: "http://{{ centos_mirror_host }}/centos/$releasever/os/$basearch/"
         gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6"
         gpgcheck: yes
         file: "CentOS-Base"
@@ -31,7 +34,7 @@
       yum_repository:
         name: "updates"
         description: "CentOS-$releasever - Updates"
-        baseurl: "http://mirror.optus.net/centos/$releasever/updates/$basearch/"
+        baseurl: "http://{{ centos_mirror_host }}/centos/$releasever/updates/$basearch/"
         gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6"
         gpgcheck: yes
         file: "CentOS-Base"
@@ -40,16 +43,16 @@
       yum_repository:
         name: "extras"
         description: "CentOS-$releasever - Extras"
-        baseurl: "http://mirror.optus.net/centos/$releasever/extras/$basearch/"
+        baseurl: "http://{{ centos_mirror_host }}/centos/$releasever/extras/$basearch/"
         gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6"
         gpgcheck: yes
         file: "CentOS-Base"
 
-#    - shell: echo {{ item }} >> /etc/hosts
-#      with_items:
-#        - "192.168.1.154    mirror.optus.net"
-#        - "192.168.1.154    archive.cloudera.com"
-#      #FIXME
+    - shell: echo {{ item }} >> /etc/hosts
+      with_items: 
+        - "{{ hostvars['proxy']['ansible_eth1']['ipv4']['address'] }}    mirror.optus.net"
+        - "{{ hostvars['proxy']['ansible_eth1']['ipv4']['address'] }}    archive.cloudera.com"
+      #FIXME
 
     - name: Install Oracle J2 SDK 
       yum:

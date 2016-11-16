@@ -1,0 +1,46 @@
+---
+
+- hosts: proxy
+  vars:
+    proxy_configs:
+      - proxy_name: cloudera_proxy
+        proxy_listen_port: 80
+        proxy_server_name: archive.cloudera.com
+      - proxy_name: centos_proxy
+        proxy_listen_port: 80
+        proxy_server_name: mirror.optus.net
+
+  tasks:
+    - name: Configure Nginx YUM Repository
+      yum_repository:
+        name: nginx
+        description: nginx repo
+        baseurl: http://nginx.org/packages/{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+        enabled: true
+        gpgcheck: false
+
+    - name: Install Nginx Server
+      yum:
+        name: nginx
+        state: present
+
+    - name: Start Nginx Server
+      service:
+        name: nginx
+        state: running
+
+    - name: Configure Nginx Proxy Vhosts
+      template:
+        src: proxy.conf.j2
+        dest: /etc/nginx/conf.d/caching-proxy.conf
+      notify:
+        - Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+        
+
+         

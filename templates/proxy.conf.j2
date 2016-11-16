@@ -1,0 +1,23 @@
+{% for config in proxy_configs %}
+server {
+    listen {{ config.proxy_listen_port }};
+
+    server_name {{ config.proxy_server_name }};
+
+    location ~ .*/repodata/.* {
+	proxy_pass http://{{ config.proxy_server_name }};
+    }
+
+    location / {
+	root /opt/nginx-proxy;
+	error_page 403 404 = @{{ config.proxy_name }};
+    }
+
+    location @{{ config.proxy_name }} {
+	internal;
+
+	proxy_pass http://{{ config.proxy_server_name }};
+	proxy_store /opt/nginx-proxy$uri;
+    }
+}
+{% endfor %}

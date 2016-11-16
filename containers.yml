@@ -1,0 +1,33 @@
+---
+
+- hosts: localhost
+  vars:
+    network_name: "hadoop"
+    docker_image: "docker.io/centos:6"
+  tasks:
+    - name: Create Docker Network
+      docker_network:
+        name: "{{ network_name }}"
+
+    - name: Create Hadoop Docker Cluster
+      docker_container:
+        image: "{{ docker_image }}"
+        name: node-{{ item }}
+        hostname: node-{{ item }}
+        network_mode: bridge
+        networks:
+          - name: "{{ network_name }}"
+        command: /bin/sleep infinity
+        privileged: true
+      with_sequence: count=6
+
+    - name: Create Proxy Container
+      docker_container:
+        image: "{{ docker_image }}"
+        name: proxy
+        hostname: proxy
+        network_mode: bridge
+        networks:
+          - name: "{{ network_name }}"
+        command: /bin/sleep infinity
+        privileged: true
