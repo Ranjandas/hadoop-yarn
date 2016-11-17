@@ -1,9 +1,9 @@
 ---
 
-- hosts: all
+- hosts: all,!proxy
   vars:
-    cloudera_mirror_host: "artifactory.dev.cba/com.cloudera.archive"
-    centos_mirror_host: "artifactory.dev.cba/mirror.aarnet.edu.au/pub/"
+    cloudera_mirror_host: "archive.cloudera.com"
+    centos_mirror_host: "mirror.optus.net"
   tasks:
     - name: Configure CDH5 YUM Repository 
       yum_repository:
