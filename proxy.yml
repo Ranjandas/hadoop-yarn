@@ -2,6 +2,7 @@
 
 - hosts: proxy
   vars:
+    proxy_caching_dir: /opt/nginx-proxy
     proxy_configs:
       - proxy_name: cloudera_proxy
         proxy_listen_port: 80
@@ -24,6 +25,13 @@
         name: nginx
         state: present
 
+    - name: Create Nginx Proxy Directory
+      file:
+        name: "{{ proxy_caching_dir  }}"
+        owner: nginx
+        group: nginx
+        state: directory
+
     - name: Start Nginx Server
       service:
         name: nginx
@@ -41,6 +49,3 @@
       service:
         name: nginx
         state: restarted
-        
-
-         

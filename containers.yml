@@ -29,5 +29,7 @@
         network_mode: bridge
         networks:
           - name: "{{ network_name }}"
+        volumes:
+          - "{{ ansible_user_dir }}/nginx-proxy:/opt/nginx-proxy:z"
         command: /bin/sleep infinity
         privileged: true
