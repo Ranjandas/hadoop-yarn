@@ -49,12 +49,12 @@
         file: "CentOS-Base"
 
     - shell: echo {{ item }} >> /etc/hosts
-      with_items: 
-        - "{{ hostvars['proxy']['ansible_eth1']['ipv4']['address'] }}    mirror.optus.net"
-        - "{{ hostvars['proxy']['ansible_eth1']['ipv4']['address'] }}    archive.cloudera.com"
+      with_items:
+        - "{{ hostvars['proxy']['ansible_eth0']['ipv4']['address'] }}    mirror.optus.net"
+        - "{{ hostvars['proxy']['ansible_eth0']['ipv4']['address'] }}    archive.cloudera.com"
       #FIXME
 
-    - name: Install Oracle J2 SDK 
+    - name: Install Oracle J2 SDK
       yum:
         name: "oracle-j2sdk1.7"
         state: present

@@ -24,9 +24,9 @@
 - hosts: namenode, secondarynamenode, datanode
   vars:
     core_site:
-      fs.defaultFS: "hdfs://{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8020"
+      fs.defaultFS: "hdfs://{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}:8020"
       #fs.defaultFS: "hdfs://{{ hostvars['node-1']['ansible_fqdn'] }}:8020"
-      dfs.namenode.rpc-bind-host: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"
+      dfs.namenode.rpc-bind-host: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}"
     hdfs_site:
       dfs.namenode.name.dir: "file:///var/lib/hadoop-hdfs/cache/hdfs/dfs/name"
       dfs.replication: "2"
@@ -89,7 +89,7 @@
   tasks:
     - name: Wait For Namenode Port 8020
       wait_for: 
-        host: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"
+        host: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}"
         port: 8020
         delay: 10
 

@@ -25,14 +25,14 @@
   vars:
     yarn_site:
       yarn.nodemanager.aux-services: "mapreduce_shuffle"
-      yarn.resourcemanager.hostname: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}"
+      yarn.resourcemanager.hostname: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}"
       yarn.resourcemanager.bind-host: "0.0.0.0"
-      yarn.resourcemanager.admin.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8033"
-      yarn.resourcemanager.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8032"
-      yarn.resourcemanager.scheduler.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8030"
-      yarn.resourcemanager.resource-tracker.address: "{{ hostvars['node-1']['ansible_eth1']['ipv4']['address'] }}:8031"
+      yarn.resourcemanager.admin.address: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}:8033"
+      yarn.resourcemanager.address: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}:8032"
+      yarn.resourcemanager.scheduler.address: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}:8030"
+      yarn.resourcemanager.resource-tracker.address: "{{ hostvars['node-1']['ansible_eth0']['ipv4']['address'] }}:8031"
       yarn.application.classpath: "$HADOOP_CONF_DIR, $HADOOP_COMMON_HOME/*, $HADOOP_COMMON_HOME/lib/*, $HADOOP_HDFS_HOME/*, $HADOOP_HDFS_HOME/lib/*, $HADOOP_MAPRED_HOME/*, $HADOOP_MAPRED_HOME/lib/*, $HADOOP_YARN_HOME/*, $HADOOP_YARN_HOME/lib/*"
-      yarn.web-proxy.address: "{{ hostvars['node-2']['ansible_eth1']['ipv4']['address'] }}:43695"
+      yarn.web-proxy.address: "{{ hostvars['node-2']['ansible_eth0']['ipv4']['address'] }}:43695"
       yarn.log-aggregation-enable: true
       yarn.log-aggregation.retain-seconds: "259200"
 

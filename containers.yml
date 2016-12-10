@@ -17,6 +17,7 @@
         network_mode: bridge
         networks:
           - name: "{{ network_name }}"
+        purge_networks: true
         command: /bin/sleep infinity
         privileged: true
       with_sequence: count=6
@@ -29,6 +30,7 @@
         network_mode: bridge
         networks:
           - name: "{{ network_name }}"
+        purge_networks: true
         volumes:
           - "{{ ansible_user_dir }}/nginx-proxy:/opt/nginx-proxy:z"
         command: /bin/sleep infinity
