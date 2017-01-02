@@ -1,0 +1,10 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+
+## Use the below codeblock for populating local /etc/hosts ##
+## Replace the above content with the content of your /etc/hosts ##
+
+{% for host in groups['all'] %}
+{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }} {{ hostvars[host]['ansible_hostname'] }} {{ hostvars[host]['ansible_fqdn'] }}
+{% endfor %}
